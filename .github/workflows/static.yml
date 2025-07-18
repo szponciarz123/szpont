@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spocone Buldogi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', Arial, sans-serif;
+      min-height: 100vh;
+      background: #000; /* <-- CZARNY TŁO */
+      position: relative;
+      overflow-x: hidden;
+      opacity: 0;
+      animation: bodyFadeIn 1.2s cubic-bezier(.4,0,.2,1) 0.1s forwards;
+    }
+    @keyframes bodyFadeIn {
+      to { opacity: 1; }
+    }
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+      background: rgba(255,255,255,0.7);
+      box-shadow: 0 4px 32px 0 rgba(24, 90, 157, 0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 68px;
+      padding: 0 32px;
+      backdrop-filter: blur(18px) saturate(180%);
+      border-bottom: 1.5px solid rgba(200,200,200,0.18);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .nav-links {
+      display: flex;
+      gap: 36px;
+    }
+    .nav-link {
+      color: #1a2a3a;
+      font-weight: 700;
+      font-size: 1.13rem;
+      text-decoration: none;
+      padding: 10px 22px 10px 22px;
+      border-radius: 10px;
+      position: relative;
+      transition: background 0.22s, color 0.22s;
+    }
+    .nav-link::after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 6px;
+      height: 3px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+      opacity: 0;
+      transform: scaleX(0.4);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .nav-link:hover::after, .nav-link.active::after {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(24,90,157,0.06);
+      color: #185a9d;
+    }
+    .main-container {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.22);
+      border-radius: 44px;
+      box-shadow: 0 16px 64px 0 rgba(24, 90, 157, 0.13), 0 1.5px 8px 0 rgba(255,255,255,0.13) inset;
+      padding: 80px 56px 56px 56px;
+      max-width: 900px;
+      width: 100%;
+      margin: 110px auto 64px auto;
+      text-align: center;
+      backdrop-filter: blur(28px) saturate(180%);
+      border: 2.5px solid rgba(255,255,255,0.38);
+      transition: box-shadow 0.3s, transform 0.3s, opacity 0.7s cubic-bezier(.4,0,.2,1);
+      opacity: 0;
+      transform: translateY(40px) scale(0.98);
+      animation: fadeInUp 1.1s cubic-bezier(.4,0,.2,1) 0.2s forwards;
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .main-container:hover {
+      box-shadow: 0 32px 96px 0 rgba(24, 90, 157, 0.18), 0 2px 12px 0 rgba(255,255,255,0.22) inset;
+      transform: scale(1.012);
+    }
+    .content, .sidebar {
+      background: rgba(255,255,255,0.82);
+      border-radius: 28px;
+      box-shadow: 0 8px 32px 0 rgba(24, 90, 157, 0.10), 0 1.5px 8px 0 rgba(255,255,255,0.13) inset;
+      padding: 36px 28px;
+      margin-bottom: 24px;
+      flex: 1 1 320px;
+      min-width: 300px;
+      max-width: 540px;
+      text-align: left;
+      backdrop-filter: blur(12px) saturate(160%);
+    }
+    .sidebar {
+      max-width: 260px;
+      min-width: 220px;
+      text-align: center;
+      padding: 36px 18px;
+    }
+    .content img {
+      max-width: 100%;
+      border-radius: 18px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 18px #185a9d22;
+    }
+    h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #185a9d;
+      margin-bottom: 18px;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 8px #fff6;
+    }
+    .calculator, .news-section {
+      background: #f7faffcc;
+      border-radius: 18px;
+      box-shadow: 0 2px 8px #185a9d11;
+      padding: 22px 18px;
+      margin-top: 32px;
+      margin-bottom: 18px;
+    }
+    .calculator input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1.5px solid #b2e0d6;
+      background: #fff;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px #43cea21a;
+    }
+    .calculator input:focus {
+      border: 2px solid #185a9d;
+      outline: none;
+      box-shadow: 0 0 0 2px #43cea2aa;
+    }
+    .calculator button {
+      padding: 10px 15px;
+      margin: 5px 5px 10px 0;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+      color: white;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .calculator button:hover {
+      background: linear-gradient(90deg, #185a9d 0%, #43cea2 100%);
+      transform: scale(1.05);
+    }
+    .calculator #result {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #185a9d;
+    }
+    .news-section h3 {
+      margin-bottom: 15px;
+      color: #185a9d;
+      font-size: 1.18rem;
+    }
+    .news-item {
+      margin-top: 10px;
+      color: #1a2a3a;
+    }
+    .sidebar img {
+      width: 100%;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px #185a9d22;
+    }
+    .footer {
+      background: rgba(255,255,255,0.7);
+      color: #185a9d;
+      text-align: center;
+      padding: 22px;
+      margin-top: 40px;
+      font-size: 1.08rem;
+      border-radius: 0 0 24px 24px;
+      box-shadow: 0 2px 12px #185a9d11;
+      letter-spacing: 0.2px;
+      text-shadow: 0 1px 8px #fff6;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (max-width: 900px) {
+      .main-container {
+        flex-direction: column;
+        padding: 32px 4vw 18px 4vw;
+      }
+      .content, .sidebar {
+        max-width: 100%;
+      }
+    }
+    @media (max-width: 600px) {
+      .main-container {
+        padding: 12px 2vw 8px 2vw;
+      }
+      h2 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-links">
+      <a href="ranking-hltv.html" class="nav-link">Nominacje Teamów</a>
+      <a href="gracze.html" class="nav-link">Nominacje Graczy</a>
+      <a href="TEAM.html" class="nav-link">Drużyny</a>
+      <a href="AKADEMIE.html" class="nav-link">Akademie</a>
+      <a href="wiadmosci.html" class="nav-link">Wiadomości</a>
+      <a href="glówna.html" class="nav-link">glówna druzyna</a>"
+      <a href="szponty-login.html" class="nav-link">TAJNE SZPONT</a>  
+      
+    </div>
+  </nav>
+  <div class="main-container">
+    <div class="content">
+      
+      <h2>Witaj na stronie Spoconych Buldogów</h2>
+      <p>
+        Jesteśmy społecznością Tier Zero H0TV – analizujemy scenę esportową, śledzimy mecze,
+        komentujemy i tworzymy rankingi drużyn oraz graczy. Nasza misja to dostarczanie
+        profesjonalnych treści w zabawnym stylu. Zapraszamy do eksploracji!
+      </p>
+      <div class="calculator">
+        <h3>Obliczanie genetyki do X-PLAYER</h3>
+        <input type="number" id="num1" placeholder="Wprowadź pierwszą liczbę">
+        <input type="number" id="num2" placeholder="Wprowadź drugą liczbę">
+        <div>
+          <button onclick="calculate('add')">➕ Dodaj</button>
+          <button onclick="calculate('sub')">➖ Odejmij</button>
+          <button onclick="calculate('mul')">✖️ Mnożenie</button>
+          <button onclick="calculate('div')">➗ Dzielenie</button>
+        </div>
+        <p id="result">Wynik: ...</p>
+      </div>
+      <div class="news-section">
+        <h3>📰 Najnowsze wiadomości</h3>
+        <div class="news-item"><strong>🔥 12.07.2025:</strong> Nowy skład Buldogów ogłoszony! Testy X-PLAYER trwają.</div>
+        <div class="news-item"><strong>📢 11.07.2025:</strong> Akademia Tier Zero rozpoczyna otwarte kwalifikacje!</div>
+        <div class="news-item"><strong>🎮 10.07.2025:</strong> Buldogi wygrywają turniej w Katarze – 3:0 w finale!</div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <img src="tier zero/XPLAYER.png" alt="Reklama">
+      <p>
+        🏆 Sprawdź najnowszy ranking drużyn i śledź postępy zawodników!
+        <br><br>
+        📅 Regularne aktualizacje, analizy oraz wywiady.
+      </p>
+    </div>
+  </div>
+  <div class="footer">
+    &copy; 2025 Spocone Buldogi Sp. z o.o. – ul. Burj Khalifa 1, Dubaj
+  </div>
+  <script>
+    function calculate(op) {
+      const a = parseFloat(document.getElementById("num1").value);
+      const b = parseFloat(document.getElementById("num2").value);
+      let result = "";
+
+      if (isNaN(a) || isNaN(b)) {
+        result = "Podaj obie liczby!";
+      } else {
+        switch (op) {
+          case 'add': result = a + b; break;
+          case 'sub': result = a - b; break;
+          case 'mul': result = a * b; break;
+          case 'div': result = b !== 0 ? (a / b).toFixed(2) : "Nie dziel przez zero!"; break;
+        }
+      }
+
+      document.getElementById("result").innerText = "Wynik: " + result;
+    }
+  </script>
+</body>
+</html>
