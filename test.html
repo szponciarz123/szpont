@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kula plazmowa</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      color: #0f0;
+      height: 100%;
+      width: 100%;
+    }
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      position: relative;
+    }
+    #sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 80px;
+      height: 100vh;
+      background: rgba(0,0,0,0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      z-index: 20;
+      border-right: 2px solid #0f0;
+      padding-top: 40px;
+    }
+    #sidebar a {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      color: #0f0;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 30px;
+      transition: color 0.2s;
+      cursor: pointer;
+      border-left: 3px solid #0f0;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    #sidebar a:hover {
+      color: #fff;
+      border-color: #fff;
+    }
+    #plasmaCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+    #toggleBtn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      z-index: 3;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-family: monospace;
+      background: black;
+      color: #0f0;
+      border: 1px solid #0f0;
+      cursor: pointer;
+    }
+    #mathOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.95);
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-size: 1.2rem;
+      display: none;
+      z-index: 10;
+      padding: 2rem;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <a href="hasla.html" id="backLink">wróć</a>
+  </div>
+  <canvas id="plasmaCanvas"></canvas>
+  <button id="toggleBtn">WŁĄCZ KULĘ</button>
+  <div id="mathOverlay"></div>
+  <script>
+    const canvas = document.getElementById('plasmaCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    const center = { x: width / 2, y: height / 2 };
+    const toggleBtn = document.getElementById('toggleBtn');
+    const mathOverlay = document.getElementById('mathOverlay');
+
+    let isPlasmaActive = false;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      center.x = width / 2;
+      center.y = height / 2;
+    });
+
+    const tendrilCount = 100;
+    const lightningBolts = [];
+    const mouse = { x: center.x, y: center.y };
+
+    document.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    toggleBtn.addEventListener('click', () => {
+      isPlasmaActive = !isPlasmaActive;
+      toggleBtn.textContent = isPlasmaActive ? 'WYŁĄCZ KULĘ' : 'WŁĄCZ KULĘ';
+      if (isPlasmaActive) {
+        showMathOverlay();
+        setTimeout(() => mathOverlay.style.display = 'none', 4000);
+      } else {
+        ctx.clearRect(0, 0, width, height);
+      }
+    });
+
+    function showMathOverlay() {
+      const content = [
+        'f(x) = sin(x) + cos(2x) - tan(x/3)',
+        'Riemann Hypothesis: ζ(s) = 0 ⇔ Re(s) = 1/2 ?',
+        'Fib(1)=1, Fib(2)=1, Fib(n)=Fib(n-1)+Fib(n-2)',
+        '∫(x^2 + 3x + 2) dx = (1/3)x^3 + (3/2)x^2 + 2x + C',
+        'lim(x→0) (sin(x)/x) = 1',
+        'f(x) = x^2 - 4x + 4 → min at x=2',
+        'Σ (1/n^2) = π^2/6',
+        'e^(iπ) + 1 = 0',
+        '∇·E = ρ/ε₀',
+        'analiza plozenia plocka na mapie00000000100101000101010101001010',
+        'szukanie kurwy mamona <<>>>>>>udane><><><<<<<>>',
+        'szukanie wózka przez wifi znaleziony waga na wozku 130 kg',
+      ];
+      mathOverlay.innerText = content.sort(() => 0.5 - Math.random()).join('\n\n');
+      mathOverlay.style.display = 'block';
+    }
+
+    function generateLightningPath(startX, startY, endX, endY, segments = 15) {
+      const points = [{ x: startX, y: startY }];
+      for (let i = 1; i < segments; i++) {
+        const t = i / segments;
+        const x = startX + (endX - startX) * t + (Math.random() - 0.5) * 20;
+        const y = startY + (endY - startY) * t + (Math.random() - 0.5) * 20;
+        points.push({ x, y });
+      }
+      points.push({ x: endX, y: endY });
+      return points;
+    }
+
+    class Lightning {
+      constructor(x, y, targetX, targetY) {
+        this.path = generateLightningPath(x, y, targetX, targetY);
+        this.alpha = 1;
+        this.fadeRate = 0.03 + Math.random() * 0.02;
+      }
+      update() {
+        this.alpha -= this.fadeRate;
+      }
+      draw(ctx) {
+        if (this.alpha <= 0) return;
+        ctx.beginPath();
+        ctx.moveTo(this.path[0].x, this.path[0].y);
+        for (let i = 1; i < this.path.length; i++) {
+          ctx.lineTo(this.path[i].x, this.path[i].y);
+        }
+        ctx.strokeStyle = `rgba(173,216,230,${this.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.shadowColor = `rgba(173,216,230,${this.alpha})`;
+        ctx.shadowBlur = 20;
+        ctx.stroke();
+      }
+    }
+
+    function spawnLightning() {
+      lightningBolts.length = 0;
+      for (let i = 0; i < tendrilCount; i++) {
+        const angle = (i / tendrilCount) * Math.PI * 2;
+        const radius = 130;
+        const x = center.x + Math.cos(angle) * radius;
+        const y = center.y + Math.sin(angle) * radius;
+        const distToMouse = Math.hypot(mouse.x - x, mouse.y - y);
+        const targetX = distToMouse < 250 ? mouse.x : center.x;
+        const targetY = distToMouse < 250 ? mouse.y : center.y;
+        lightningBolts.push(new Lightning(x, y, targetX, targetY));
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      if (isPlasmaActive && Math.random() < 0.5) spawnLightning();
+      if (isPlasmaActive) {
+        lightningBolts.forEach(bolt => {
+          bolt.update();
+          bolt.draw(ctx);
+        });
+      }
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html> 

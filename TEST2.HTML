@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hakerski Czat</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      font-family: 'Courier New', monospace;
+      color: #0f0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      position: relative;
+    }
+
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .center-image {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 3px solid #0f0;
+      box-shadow: 0 0 20px #0f0;
+      object-fit: cover;
+      z-index: 10;
+    }
+
+    .chat-history {
+      width: 300px;
+      background-color: #010;
+      border-left: 1px solid #0f0;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      max-width: 90%;
+      word-wrap: break-word;
+      font-size: 14px;
+    }
+
+    .user {
+      align-self: flex-end;
+      background-color: #002900;
+      border: 1px solid #0f0;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background-color: #001100;
+      border: 1px solid #0f0;
+    }
+
+    .input-container {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background-color: #111;
+      border-top: 1px solid #0f0;
+      display: flex;
+      padding: 10px;
+    }
+
+    input {
+      flex: 1;
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin-left: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-family: monospace;
+    }
+
+    /* Scrollbar styling */
+    .chat-history::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-history::-webkit-scrollbar-thumb {
+      background: #0f0;
+    }
+
+    .chat-history::-webkit-scrollbar-track {
+      background: #010;
+    }
+
+  </style>
+</head>
+                   <body><a href="test3.html">wroc</a>
+
+           <div class="chat-container">
+    <div class="main-area">
+      <!-- <<< TUTAJ DODAJ SWOJE ZDJĘCIE >>> -->
+      <img src="tier zero/mamonikinf.png" alt="Osoba" class="center-image" />
+    </div>
+
+    <div class="chat-history" id="chat-history">
+      <!-- wiadomości pojawią się tutaj -->
+    </div>
+  </div>
+
+  <div class="input-container">
+    <input type="text" id="user-input" placeholder="napisz do komendanta" />
+    <button onclick="sendMessage()">Wyślij</button>
+  </div>
+
+  <script>
+    const responses = [
+      "nie wiem szukam kobitki.",
+      "musze se znalesc klientke.",
+      "wiesz co ? dawno nie mialem dziewczyny i z nia na kurniku nie gralem .",
+      "jak tobie szkoda prądu to gratuluje mozgu.",
+      "są na chacie jakies hejterki .",
+      "wózek sam mi sie odpalil co jest ",
+      "nie mów nikomu ale mieszkam z rodzicami.",
+      "kiedys ta mortadela byla inna .",
+      "ludzie mnie hejtuja bo mam za wysokie iq.",
+      "mam kategorie szachowa 1900 elo jest na stronie klubu szachowego ja tu wszystkich znam z tego klubu .",
+      "bylem komendantem ale stracilem nogi na akcji.",
+      "brak kobitki w koncu mnie wykonczy naprawde",
+      "stary ale o tym tubsonie to mi nie gadaj .",
+      "niedlugo po tych badaniach co dostalem to nie beddzie streamow .",
+      "kiedys chcialem zarymowac i powiedzialem do wujka. wujek kujek a on zrozumial wujekchujek i mi liscia wyjebal.",
+      "dziekuje mojemu ojcu ze i po glowie skakal bo dzieki temu bólu nie czuje.",
+      "nie przejumj mi kontroli nad wozkiem prosze",
+      "moj ojciec przyjezdza 100 km zeby fajka zaplalic.",
+      "snajperzy sa wszedzie.",
+     
+    ];
+
+    function sendMessage() {
+      const input = document.getElementById("user-input");
+      const history = document.getElementById("chat-history");
+      const userText = input.value.trim();
+
+      if (userText !== "") {
+        addMessage(userText, "user");
+
+        const randomIndex = Math.floor(Math.random() * responses.length);
+        const response = responses[randomIndex];
+        setTimeout(() => {
+          addMessage(response, "bot");
+        }, 500 + Math.random() * 1000); // dodaj losowe opóźnienie dla klimatu
+
+        input.value = "";
+      }
+    }
+
+    function addMessage(text, sender) {
+      const history = document.getElementById("chat-history");
+      const msg = document.createElement("div");
+      msg.classList.add("message", sender);
+      msg.textContent = text;
+      history.appendChild(msg);
+      history.scrollTop = history.scrollHeight;
+    }
+  </script>
+
+</body>
+</html>
