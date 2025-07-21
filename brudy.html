@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Brudy na mamona</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #000;
+      color: #00ff00;
+      font-family: 'Share Tech Mono', monospace;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      letter-spacing: 5px;
+      margin-bottom: 2rem;
+      color: #0f0;
+      text-shadow:
+        0 0 5px #00ff00,
+        0 0 10px #00ff00,
+        0 0 20px #0f0,
+        0 0 30px #0f0;
+      animation: flicker 3s infinite alternate;
+      user-select: none;
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Glitch effect on h1 */
+    h1.glitch {
+      position: relative;
+    }
+
+    h1.glitch::before,
+    h1.glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      right: 0;
+      opacity: 0.7;
+      color: #0f0;
+      overflow: hidden;
+      clip: rect(0, 900px, 0, 0);
+    }
+
+    h1.glitch::before {
+      left: 2px;
+      text-shadow: -2px 0 red;
+      animation: glitch 2s infinite linear alternate-reverse;
+    }
+
+    h1.glitch::after {
+      left: -2px;
+      text-shadow: -2px 0 blue;
+      animation: glitch 3s infinite linear alternate;
+    }
+
+    .ai3-img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+
+    #brudy-box {
+      width: 100%;
+      max-width: 700px;
+      min-height: 300px;
+      background: #000;
+      border: 2px solid #00ff00;
+      color: #0f0;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.2rem;
+      padding: 1rem;
+      box-shadow:
+        0 0 5px #00ff00,
+        inset 0 0 10px #00ff00;
+      white-space: pre-wrap;
+      user-select: text;
+      overflow-y: auto;
+      margin-top: 2rem;
+    }
+
+    @keyframes glitch {
+      0% {
+        clip: rect(42px, 9999px, 44px, 0);
+        transform: translate(0.5px, -0.5px);
+      }
+      20% {
+        clip: rect(10px, 9999px, 80px, 0);
+        transform: translate(-0.5px, 0.5px);
+      }
+      40% {
+        clip: rect(80px, 9999px, 90px, 0);
+        transform: translate(0.5px, 0);
+      }
+      60% {
+        clip: rect(44px, 9999px, 50px, 0);
+        transform: translate(-0.5px, -0.5px);
+      }
+      80% {
+        clip: rect(60px, 9999px, 62px, 0);
+        transform: translate(0, 0.5px);
+      }
+      100% {
+        clip: rect(42px, 9999px, 44px, 0);
+        transform: translate(0.5px, -0.5px);
+      }
+    }
+
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+        text-shadow:
+          0 0 5px #0f0,
+          0 0 10px #0f0,
+          0 0 20px #0f0;
+      }
+      20%, 22%, 24%, 55% {
+        opacity: 0.4;
+        text-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="glitch" data-text="brudy na mamona i dzieciola">brudy na mamona</h1>
+  <img src="tier zero/ai3.png" alt="" class="ai3-img">
+
+  <div id="brudy-box">
+    mamoon to jebany konfident z plocka
+  </div>
+</body>
+</html>
