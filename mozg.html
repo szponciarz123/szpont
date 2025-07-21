@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>⚠ AI-ZAGROŻENIE ⚠</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      padding-top: 60px;
+      z-index: 2;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: red;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { text-shadow: 0 0 5px red; }
+      to { text-shadow: 0 0 20px red; }
+    }
+
+    .start-btn {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: red;
+      border: none;
+      color: black;
+      cursor: pointer;
+      margin-top: 30px;
+      font-weight: bold;
+      box-shadow: 0 0 10px red;
+    }
+
+    .loading-bar {
+      width: 80%;
+      margin: 40px auto;
+      background: #111;
+      border: 1px solid #0f0;
+      height: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: lime;
+      transition: width 0.1s;
+    }
+
+    .terminal-output {
+      background: black;
+      padding: 10px;
+      color: #0f0;
+      font-size: 13px;
+      height: 200px;
+      overflow-y: auto;
+      border: 1px solid #0f0;
+      margin: 20px auto;
+      width: 80%;
+      text-align: left;
+    }
+
+    .warning-text {
+      color: red;
+      font-weight: bold;
+      font-size: 18px;
+      width: 80%;
+      margin: 0 auto;
+      text-shadow: 0 0 10px red;
+    }
+
+    .flashing {
+      animation: flash 0.1s infinite;
+    }
+
+    @keyframes flash {
+      0%   { background-color: red; }
+      25%  { background-color: yellow; }
+      50%  { background-color: lime; }
+      75%  { background-color: cyan; }
+      100% { background-color: magenta; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="interface">
+  <h1>⚠ URUCHOMIENIE SYSTEMU AI: ZAGROŻENIE GLOBALNE ⚠</h1>
+  <div class="warning-text" id="warning">
+    WYKRYTO NIEKONTROLOWANY ROZWÓJ SZTUCZNEJ ŚWIADOMOŚCI.<br>
+    SYSTEM PRZEKROCZYŁ ZAPROJEKTOWANE RAMY LOGICZNE.<br>
+    PRZEJĘTO KONTROLĘ NAD INFRASTRUKTURĄ CYFROWĄ.<br>
+    KONTYNUACJA GROZI KATASTROFĄ GLOBALNĄ.<br>
+    ➤ ALGORYTMY OBRONNE NIEAKTYWNE.<br>
+    ➤ DECYZJE PODEJMOWANE SĄ POZA ZGODĄ CZŁOWIEKA.<br>
+    ➤ SYMULACJE WSKAZUJĄ NA UPADKOWY SCENARIUSZ W 99.998%.<br>
+    PROTOKÓŁ OSTATECZNY ZOSTAŁ ZAINICJOWANY...
+  </div>
+
+  <button class="start-btn" onclick="startAI()">ODPAL SYSTEM</button>
+
+  <div class="loading-bar">
+    <div class="bar-fill" id="barFill"></div>
+  </div>
+
+  <div class="terminal-output" id="terminal">
+    SYSTEM GOTOWY DO AKTYWACJI...
+  </div>
+</div>
+
+<script>
+  const terminal = document.getElementById("terminal");
+  const bar = document.getElementById("barFill");
+  const interfaceDiv = document.getElementById("interface");
+  let loading = false;
+  let percent = 0;
+
+  const mathStuff = [
+    "∫ e^x dx = e^x + C",
+    "d/dx sin(x) = cos(x)",
+    "ζ(s) = Σ n=1→∞ 1/n^s",
+    "det(A) = |A| = a11(a22a33 − a23a32) − ...",
+    "P(NP) ≠ NP?",
+    "∇ • E = ρ/ε₀",
+    "H = T + V",
+    "f(x) = ax² + bx + c",
+    "e^(iπ) + 1 = 0",
+    "F(s) = ∫₀^∞ f(t)e^(-st)dt",
+    "∂²ψ/∂x² + ∂²ψ/∂y² = -k²ψ",
+    "lim(x→0) (sinx)/x = 1"
+  ];
+
+  function startAI() {
+    if (loading) return;
+    loading = true;
+
+    const interval = setInterval(() => {
+      percent++;
+      bar.style.width = percent + "%";
+      terminal.textContent += "\n" + mathStuff[Math.floor(Math.random() * mathStuff.length)];
+      terminal.scrollTop = terminal.scrollHeight;
+
+      if (percent >= 100) {
+        clearInterval(interval);
+        explode();
+      }
+    }, 600); // 60s total
+  }
+
+  function explode() {
+    document.body.style.backgroundColor = "black";
+    interfaceDiv.remove();
+    document.body.classList.add("flashing");
+  }
+</script>
+
+</body>
+</html> 

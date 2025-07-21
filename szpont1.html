@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hakerskie Szachy vs AI</title>
+  <style>
+    body {
+      background: #000;
+      color: #eee;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      min-width: 700px;
+    }
+    h1 { margin-top: 30px; margin-bottom: 10px; letter-spacing: 2px; color: #fff; }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      border: 3px solid #333;
+      box-shadow: 0 0 30px #aaa;
+      margin-bottom: 20px;
+      background: #222;
+    }
+    .square {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .dark { background: #888; color: #fff; }
+    .light { background: #d3d3d3; color: #222; }
+    .piece-white { color: #e53935 !important; }
+    .piece-black { color: #8e24aa !important; }
+    .piece-white-pawn { color: #e53935 !important; }
+    .piece-black-pawn { color: #8e24aa !important; }
+    .selected { background: #f6f669 !important; color: #000 !important; box-shadow: 0 0 16px #f6f669 inset; }
+    .move { background: #baca44 !important; box-shadow: 0 0 10px #baca44 inset; }
+    .check { background: #e74c3c !important; color: #fff !important; box-shadow: 0 0 20px #e74c3c inset; }
+    .panel {
+      color: #fff;
+      background: #111;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 10px 18px;
+      margin-bottom: 10px;
+      font-size: 18px;
+      box-shadow: 0 0 10px #222;
+    }
+    button {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 10px 22px;
+      font-family: monospace;
+      font-size: 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+      box-shadow: 0 0 10px #222;
+      transition: background 0.2s, color 0.2s;
+    }
+    button:hover { background: #222; color: #fff; }
+    a {
+      color: #fff;
+      text-decoration: underline;
+      margin-top: 18px;
+      display: inline-block;
+    }
+    .winner-link {
+      margin-top: 24px;
+      font-size: 22px;
+      color: #fff;
+      background: #333;
+      padding: 12px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 0 20px #bbb;
+      display: inline-block;
+    }
+    .winner-link:hover { background: #fff; color: #333; }
+    .player-info {
+      display: flex;
+      align-items: center;
+      background: #111;
+      border: 2px solid #333;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      padding: 10px 24px;
+      box-shadow: 0 0 10px #222;
+      min-width: 320px;
+      max-width: 400px;
+    }
+    .player-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #fff;
+      margin-right: 18px;
+      background: #222;
+    }
+    .player-details {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .player-name {
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .player-elo {
+      font-size: 18px;
+      color: #eee;
+      margin-bottom: 2px;
+    }
+    .chat-container {
+      width: 320px;
+      min-height: 500px;
+      max-height: 700px;
+      background: #111;
+      border-left: 2px solid #333;
+      box-shadow: -2px 0 10px #222;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      margin-left: 0;
+      z-index: 2;
+    }
+    .chat-header {
+      background: #333;
+      color: #fff;
+      padding: 14px 20px;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom: 1px solid #444;
+      letter-spacing: 1px;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 18px 16px 12px 16px;
+      overflow-y: auto;
+      font-size: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-message {
+      background: #222;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #fff;
+      align-self: flex-start;
+      max-width: 90%;
+      box-shadow: 0 1px 4px #111;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .chat-message.ai {
+      background: #1a2634;
+      color: #7ed6df;
+      align-self: flex-end;
+      font-style: italic;
+      border-left: 4px solid #fff;
+    }
+    .chat-message.check {
+      background: #3c1a1a;
+      color: #e74c3c;
+      font-weight: bold;
+      align-self: flex-end;
+      border-left: 4px solid #e74c3c;
+    }
+    .chat-message.end {
+      background: #1a3c1a;
+      color: #27ae60;
+      font-weight: bold;
+      align-self: flex-end;
+      border-left: 4px solid #229954;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+    <h1>Hakerskie Szachy vs AI</h1>
+    <h2>wróć na stronę główną <a href="hasla.html">tutaj</a></h2>
+    <div class="player-info">
+      <img class="player-photo" id="playerPhoto" src="tier zero/aim.png" alt="Zdjęcie zawodnika">
+      <div class="player-details">
+        <div class="player-name" id="playerName">Konfi AI</div>
+        <div class="player-elo" id="playerElo">ELO: 2100</div>
+        <div class="player-elo" id="playerTitle">AI Chess Bot</div>
+      </div>
+    </div>
+    <div class="panel" id="status">Twój ruch (białe)</div>
+    <div class="board" id="board"></div>
+    <button onclick="resetGame()">Resetuj grę</button>
+    <a href="szpont1.html">Powrót do terminala</a>
+    <div id="winnerLinkBox"></div>
+  </div>
+  <div class="chat-container">
+    <div class="chat-header">Czat AI</div>
+    <div class="chat-messages" id="chatMessages"></div>
+  </div>
+  <script>
+    // --- Ustawienia i zmienne ---
+    const initialBoard = [
+      ["bR","bN","bB","bQ","bK","bB","bN","bR"],
+      ["bP","bP","bP","bP","bP","bP","bP","bP"],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["wP","wP","wP","wP","wP","wP","wP","wP"],
+      ["wR","wN","wB","wQ","wK","wB","wN","wR"]
+    ];
+    const unicode = { wK:"♔",wQ:"♕",wR:"♖",wB:"♗",wN:"♘",wP:"♙", bK:"♚",bQ:"♛",bR:"♜",bB:"♝",bN:"♞",bP:"♟" };
+    const values = { K:0, Q:9, R:5, B:3, N:3, P:1 };
+    let board = [], selected = null, possibleMoves = [], whiteTurn = true, gameOver = false;
+    let castlingRights = { wK: true, wQ: true, bK: true, bQ: true };
+    const boardDiv = document.getElementById("board"), statusDiv = document.getElementById("status");
+    const winnerLinkBox = document.getElementById("winnerLinkBox");
+    const chatMessages = document.getElementById("chatMessages");
+    let moveCount = 0;
+
+    const aiChatMessages = [
+     
+      "brak kobitki to najgrsza rzecz na swiecie.",
+      "stary ja bylem krok od slubu.",
+      "dlatego ja wlasnie kobitki nie mam.",
+      "głupi dzieciak",
+      "ciekawe co bedzie robil jak go we wlasnym miescie beda jechac.",
+      "to niezlla kategoria.",
+      "dawno nie mialem kobitki zeby zagrac z nia w tysiaca na kurniku.",
+      "jak raz sie rymowalem wujek kujek a wujek uslyszal wujek chujek i mi liscia wyjebal.",
+      "jak w biedronce nie ma piekarza?",
+      "a w dupie mam tego tubsona.",
+      "są jakies hejtereczki.",
+      "a to hejterka.",
+      "jak momencie zapliacisz 100tys to jedziemy na testy .",
+      "amur  taki gosc",
+      "to w przenosni bajka zabawa gra.",
+      "stary mnie na dzwieki brali.",
+      "wiecie co?dawno nie mialem kobitki",
+      "kurcze nie mam kobitki!"
+    ];
+    const aiCheckMessages = [
+     
+    ];
+    const aiEndMessages = [
+    'to niezla kategoria xd'
+    ];
+
+    function addChatMessage(msg, type = "") {
+      const div = document.createElement("div");
+      div.className = "chat-message" + (type ? " " + type : "");
+      div.textContent = msg;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function randomFrom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function resetGame() {
+      board = JSON.parse(JSON.stringify(initialBoard));
+      selected = null; possibleMoves = []; whiteTurn = true; gameOver = false;
+      castlingRights = { wK: true, wQ: true, bK: true, bQ: true };
+      statusDiv.textContent = "Twój ruch (białe)";
+      winnerLinkBox.innerHTML = "";
+      chatMessages.innerHTML = "";
+      moveCount = 0;
+      addChatMessage("Witaj w czacie AI! Zagrajmy w szachy.", "ai");
+      drawBoard();
+    }
+
+    function drawBoard() {
+      boardDiv.innerHTML = "";
+      let checkSquare = getCheckSquare();
+      for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+        const sq = document.createElement("div");
+        sq.className = "square " + ((x + y) % 2 === 0 ? "light" : "dark");
+        if (selected && selected.x === x && selected.y === y) sq.classList.add("selected");
+        if (possibleMoves.some(m => m.x === x && m.y === y)) sq.classList.add("move");
+        if (checkSquare && checkSquare.x === x && checkSquare.y === y) sq.classList.add("check");
+        sq.dataset.x = x; sq.dataset.y = y;
+        const piece = board[y][x];
+        if (piece) {
+          const span = document.createElement("span");
+          span.innerHTML = unicode[piece] || "";
+          span.className = piece[0] === "w" ? "piece-white" : "piece-black";
+          sq.appendChild(span);
+        }
+        sq.onclick = () => onSquareClick(x, y);
+        boardDiv.appendChild(sq);
+      }
+    }
+
+    function onSquareClick(x, y) {
+      if (gameOver || !whiteTurn) return;
+      const piece = board[y][x];
+      if (selected) {
+        // Roszada białych - poprawka!
+        if (selected && board[selected.y][selected.x][1] === "K" && Math.abs(x - selected.x) === 2 && selected.y === y) {
+          if (isLegalCastling("w", x > selected.x ? "K" : "Q")) {
+            doCastling("w", x > selected.x ? "K" : "Q");
+            selected = null; possibleMoves = [];
+            whiteTurn = false;
+            moveCount++;
+            drawBoard();
+            if (moveCount % 3 === 0) addChatMessage(randomFrom(aiChatMessages), "ai");
+            setTimeout(aiMove, 400);
+            checkGameOver();
+          }
+          return;
+        }
+        // Ruch tylko jeśli nie zostawia króla pod szachem
+        if (possibleMoves.some(m => m.x === x && m.y === y)) {
+          const backup = JSON.parse(JSON.stringify(board));
+          board[y][x] = board[selected.y][selected.x];
+          board[selected.y][selected.x] = "";
+          // Aktualizuj prawa do roszady
+          if (board[y][x] === "wK") castlingRights.wK = castlingRights.wQ = false;
+          if (board[y][x] === "wR" && selected.x === 0 && selected.y === 7) castlingRights.wQ = false;
+          if (board[y][x] === "wR" && selected.x === 7 && selected.y === 7) castlingRights.wK = false;
+          if (isKingInCheck("w")) {
+            board = backup;
+            drawBoard();
+            statusDiv.textContent = "Nie możesz zostawić króla pod szachem!";
+            addChatMessage(randomFrom(aiCheckMessages), "check");
+            return;
+          }
+          doMoveOrCastling();
+          return;
+        }
+        if (piece && piece[0] === "w") {
+          selected = {x, y}; possibleMoves = legalMoves(x, y, piece, board, "w");
+          drawBoard(); return;
+        }
+        selected = null; possibleMoves = []; drawBoard(); return;
+      }
+      if (piece && piece[0] === "w") {
+        selected = {x, y}; possibleMoves = legalMoves(x, y, piece, board, "w");
+        drawBoard();
+      }
+    }
+
+    function doMoveOrCastling(castleFn) {
+      selected = null; possibleMoves = [];
+      whiteTurn = false;
+      if (castleFn) castleFn();
+      moveCount++;
+      drawBoard();
+      if (moveCount % 3 === 0) addChatMessage(randomFrom(aiChatMessages), "ai");
+      setTimeout(aiMove, 400);
+      checkGameOver();
+    }
+
+    function legalMoves(x, y, piece, b, color) {
+      return getMoves(x, y, piece, b).filter(m => {
+        const copy = JSON.parse(JSON.stringify(b));
+        copy[m.y][m.x] = copy[y][x];
+        copy[y][x] = "";
+        return !isKingInCheck(color, copy);
+      });
+    }
+
+    function getMoves(x, y, piece, b) {
+      const moves = [], color = piece[0], enemy = color === "w" ? "b" : "w";
+      if (piece[1] === "P") {
+        const dir = color === "w" ? -1 : 1;
+        if (inBoard(x, y + dir) && !b[y + dir][x]) moves.push({x, y: y + dir});
+        if ((color === "w" && y === 6) || (color === "b" && y === 1))
+          if (!b[y + dir][x] && !b[y + 2*dir][x]) moves.push({x: x, y: y + 2*dir});
+        for (let dx of [-1, 1])
+          if (inBoard(x + dx, y + dir) && b[y + dir][x + dx] && b[y + dir][x + dx][0] === enemy)
+            moves.push({x: x + dx, y: y + dir});
+      }
+      if (piece[1] === "N") for (let [dx, dy] of [[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]]) {
+        const nx = x + dx, ny = y + dy;
+        if (inBoard(nx, ny) && (!b[ny][nx] || b[ny][nx][0] === enemy)) moves.push({x: nx, y: ny});
+      }
+      if (piece[1] === "B" || piece[1] === "Q")
+        for (let [dx, dy] of [[1,1],[1,-1],[-1,1],[-1,-1]])
+          for (let i = 1; i < 8; i++) {
+            const nx = x + dx*i, ny = y + dy*i;
+            if (!inBoard(nx, ny)) break;
+            if (!b[ny][nx]) moves.push({x: nx, y: ny});
+            else { if (b[ny][nx][0] === enemy) moves.push({x: nx, y: ny}); break; }
+          }
+      if (piece[1] === "R" || piece[1] === "Q")
+        for (let [dx, dy] of [[1,0],[0,1],[-1,0],[0,-1]])
+          for (let i = 1; i < 8; i++) {
+            const nx = x + dx*i, ny = y + dy*i;
+            if (!inBoard(nx, ny)) break;
+            if (!b[ny][nx]) moves.push({x: nx, y: ny});
+            else { if (b[ny][nx][0] === enemy) moves.push({x: nx, y: ny}); break; }
+          }
+      if (piece[1] === "K") {
+        for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+          if (dx === 0 && dy === 0) continue;
+          const nx = x + dx, ny = y + dy;
+          if (inBoard(nx, ny) && (!b[ny][nx] || b[ny][nx][0] === enemy)) moves.push({x: nx, y: ny});
+        }
+        // Roszada białych
+        if (color === "w" && y === 7 && x === 4) {
+          if (castlingRights.wK && b[7][5] === "" && b[7][6] === "" && b[7][7] === "wR")
+            moves.push({x: 6, y: 7});
+          if (castlingRights.wQ && b[7][3] === "" && b[7][2] === "" && b[7][1] === "" && b[7][0] === "wR")
+            moves.push({x: 2, y: 7});
+        }
+        // Roszada czarnych
+        if (color === "b" && y === 0 && x === 4) {
+          if (castlingRights.bK && b[0][5] === "" && b[0][6] === "" && b[0][7] === "bR")
+            moves.push({x: 6, y: 0});
+          if (castlingRights.bQ && b[0][3] === "" && b[0][2] === "" && b[0][1] === "" && b[0][0] === "bR")
+            moves.push({x: 2, y: 0});
+        }
+      }
+      return moves;
+    }
+
+    function isLegalCastling(color, side) {
+      let y = color === "w" ? 7 : 0;
+      let kingPath = side === "K" ? [4,5,6] : [4,3,2];
+      for (let i = 0; i < kingPath.length; i++) {
+        const copy = JSON.parse(JSON.stringify(board));
+        copy[y][kingPath[i]] = color + "K";
+        if (i > 0) copy[y][kingPath[i-1]] = "";
+        if (isKingInCheck(color, copy)) return false;
+      }
+      return true;
+    }
+
+    function doCastling(color, side) {
+      if (color === "w") {
+        if (side === "K") {
+          board[7][6] = "wK"; board[7][5] = "wR";
+          board[7][4] = ""; board[7][7] = "";
+        } else {
+          board[7][2] = "wK"; board[7][3] = "wR";
+          board[7][4] = ""; board[7][0] = "";
+        }
+        castlingRights.wK = castlingRights.wQ = false;
+      } else {
+        if (side === "K") {
+          board[0][6] = "bK"; board[0][5] = "bR";
+          board[0][4] = ""; board[0][7] = "";
+        } else {
+          board[0][2] = "bK"; board[0][3] = "bR";
+          board[0][4] = ""; board[0][0] = "";
+        }
+        castlingRights.bK = castlingRights.bQ = false;
+      }
+    }
+
+    function inBoard(x, y) { return x >= 0 && x < 8 && y >= 0 && y < 8; }
+
+    function aiMove() {
+      if (gameOver) return;
+      let best = null, bestScore = -9999;
+      for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+        const piece = board[y][x];
+        if (piece && piece[0] === "b") {
+          const moves = legalMoves(x, y, piece, board, "b");
+          for (const m of moves) {
+            // Roszada czarnych
+            if (piece[1] === "K" && Math.abs(m.x - x) === 2 && y === m.y && isLegalCastling("b", m.x > x ? "K" : "Q")) {
+              const copy = JSON.parse(JSON.stringify(board));
+              if (m.x > x) {
+                copy[0][6] = "bK"; copy[0][5] = "bR"; copy[0][4] = ""; copy[0][7] = "";
+              } else {
+                copy[0][2] = "bK"; copy[0][3] = "bR"; copy[0][4] = ""; copy[0][0] = "";
+              }
+              const score = evaluateBoard(copy);
+              if (score > bestScore) { bestScore = score; best = {from: {x, y}, to: m, castling: true}; }
+              continue;
+            }
+            const copy = JSON.parse(JSON.stringify(board));
+            copy[m.y][m.x] = copy[y][x];
+            copy[y][x] = "";
+            const score = evaluateBoard(copy);
+            if (score > bestScore) { bestScore = score; best = {from: {x, y}, to: m}; }
+          }
+        }
+      }
+      if (best) {
+        if (best.castling) {
+          doCastling("b", best.to.x > best.from.x ? "K" : "Q");
+        } else {
+          if (board[best.from.y][best.from.x] === "bK") castlingRights.bK = castlingRights.bQ = false;
+          if (board[best.from.y][best.from.x] === "bR" && best.from.x === 0 && best.from.y === 0) castlingRights.bQ = false;
+          if (board[best.from.y][best.from.x] === "bR" && best.from.x === 7 && best.from.y === 0) castlingRights.bK = false;
+          board[best.to.y][best.to.x] = board[best.from.y][best.from.x];
+          board[best.from.y][best.from.x] = "";
+        }
+      }
+      moveCount++;
+      if (moveCount % 3 === 0) addChatMessage(randomFrom(aiChatMessages), "ai");
+      whiteTurn = true;
+      drawBoard();
+      checkGameOver();
+    }
+
+    function evaluateBoard(b) {
+      let score = 0;
+      for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+        const p = b[y][x];
+        if (p) score += (p[0] === "b" ? 1 : -1) * (values[p[1]] || 0);
+      }
+      return score + Math.random()*0.01;
+    }
+
+    function isKingInCheck(color, b = board) {
+      let kx = -1, ky = -1;
+      for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++)
+        if (b[y][x] === color + "K") { kx = x; ky = y; }
+      for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+        const p = b[y][x];
+        if (p && p[0] !== color) {
+          const moves = getMoves(x, y, p, b);
+          if (moves.some(m => m.x === kx && m.y === ky)) return true;
+        }
+      }
+      return false;
+    }
+
+    function getCheckSquare() {
+      if (isKingInCheck("w")) {
+        for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++)
+          if (board[y][x] === "wK") return {x, y};
+      }
+      if (isKingInCheck("b")) {
+        for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++)
+          if (board[y][x] === "bK") return {x, y};
+      }
+      return null;
+    }
+
+    function checkGameOver() {
+      let wK = false, bK = false;
+      for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+        if (board[y][x] === "wK") wK = true;
+        if (board[y][x] === "bK") bK = true;
+      }
+      if (!wK) {
+        statusDiv.textContent = "Przegrałeś!";
+        gameOver = true;
+        winnerLinkBox.innerHTML = "";
+        addChatMessage(randomFrom(aiEndMessages), "end");
+      }
+      else if (!bK) {
+        statusDiv.textContent = "Wygrałeś!";
+        gameOver = true;
+        winnerLinkBox.innerHTML = '<a class="winner-link" href="brudy.html" target="_blank">Nagroda: Przejdź do strony X</a>';
+        addChatMessage(randomFrom(aiEndMessages), "end");
+      }
+      else if (isKingInCheck(whiteTurn ? "w" : "b")) {
+        statusDiv.textContent = (whiteTurn ? "Twój ruch (białe)" : "Ruch AI (czarne)") + " — SZACH!";
+        addChatMessage(randomFrom(aiCheckMessages), "check");
+      }
+      else statusDiv.textContent = whiteTurn ? "Twój ruch (białe)" : "Ruch AI (czarne)";
+    }
+
+    resetGame();
+  </script>
+</body>
+</html>
