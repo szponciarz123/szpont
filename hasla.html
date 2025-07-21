@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Szponty - Classified</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000;
+      color: #00ff00;
+      overflow-x: hidden;
+      user-select: none;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #000;
+      border-bottom: 2px solid #00ff00;
+      padding: 1rem 2rem;
+      position: relative;
+      z-index: 10;
+    }
+    .logo {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-shadow:
+        0 0 5px #00ff00,
+        0 0 10px #00ff00,
+        0 0 20px #00ff00,
+        0 0 40px #00ff00;
+      user-select: none;
+    }
+    .ai3-img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      margin-left: 16px;
+      vertical-align: middle;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+    .nav-links li a {
+      text-decoration: none;
+      color: #00ff00;
+      text-shadow: 0 0 5px #00ff00;
+      position: relative;
+      transition: 0.3s ease all;
+      user-select: none;
+    }
+    .nav-links li a::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: #00ff00;
+      left: 0;
+      bottom: -4px;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+    .nav-links li a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    .nav-links li a:hover {
+      color: #0f0;
+      text-shadow:
+        0 0 10px #0f0,
+        0 0 20px #0f0;
+    }
+    .hamburger {
+      display: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #00ff00;
+      user-select: none;
+    }
+    .hero {
+      padding: 6rem 2rem;
+      text-align: center;
+      background-color: #000;
+      border-top: 1px solid #00ff00;
+      border-bottom: 1px solid #00ff00;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      letter-spacing: 6px;
+      text-shadow:
+        0 0 5px #00ff00,
+        0 0 20px #0f0,
+        0 0 30px #0f0;
+      animation: flicker 3s infinite alternate;
+      user-select: none;
+    }
+    .hero p {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      color: #0f0;
+      text-shadow: 0 0 10px #0f0;
+      user-select: none;
+    }
+    footer {
+      background-color: #000;
+      color: #004400;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      border-top: 1px solid #004400;
+      user-select: none;
+    }
+    @keyframes glitch {
+      0% { clip: rect(42px, 9999px, 44px, 0); transform: translate(0.5px, -0.5px);}
+      20% { clip: rect(10px, 9999px, 80px, 0); transform: translate(-0.5px, 0.5px);}
+      40% { clip: rect(80px, 9999px, 90px, 0); transform: translate(0.5px, 0);}
+      60% { clip: rect(44px, 9999px, 50px, 0); transform: translate(-0.5px, -0.5px);}
+      80% { clip: rect(60px, 9999px, 62px, 0); transform: translate(0, 0.5px);}
+      100% { clip: rect(42px, 9999px, 44px, 0); transform: translate(0.5px, -0.5px);}
+    }
+    .glitch {
+      position: relative;
+      color: #0f0;
+      font-weight: 900;
+      animation: flicker 2s infinite alternate;
+      user-select: none;
+    }
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      right: 0;
+      opacity: 0.8;
+      color: #0f0;
+      background: #000;
+      overflow: hidden;
+      clip: rect(0, 900px, 0, 0);
+    }
+    .glitch::before {
+      left: 2px;
+      text-shadow: -2px 0 red;
+      animation: glitch 2s infinite linear alternate-reverse;
+    }
+    .glitch::after {
+      left: -2px;
+      text-shadow: -2px 0 blue;
+      animation: glitch 3s infinite linear alternate;
+    }
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+        text-shadow:
+          0 0 5px #0f0,
+          0 0 10px #0f0,
+          0 0 20px #0f0;
+      }
+      20%, 22%, 24%, 55% {
+        opacity: 0.4;
+        text-shadow: none;
+      }
+    }
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        background-color: #000;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        width: 220px;
+        padding: 1rem;
+        border-left: 2px solid #00ff00;
+        z-index: 20;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+      .hamburger {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo glitch" data-text="SZPONTY">SZPONTY</div>
+    <a href="TEST2.HTML">
+      <img src="tier zero/ai3.png" alt="" class="ai3-img">
+    </a>
+    <ul class="nav-links" id="nav-links">
+      
+      <li><a href="szpont1.html">szachy z mamonem</a></li>
+      <li><a href="mozg.html">ZAGRZENIE DLA LUDZKOŚCI (NIEKLIKAJ)</a></li>
+      <li><a href="test.html">kula grypsu</a></li>
+      <li><a href="test3.html"> rozmowa z mozgami geniuszy</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger">&#9776;</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1 class="glitch" data-text="WITAMY NA STRONIE SZPONTY">WITAMY NA STRONIE SZPONTY</h1>
+      <p>Uwaga: Dostęp tylko dla upoważnionych. Wszystkie działania są monitorowane.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 SZPONTY - Classified Information</p>
+  </footer>
+
+  <script>
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.getElementById("nav-links");
+
+    hamburger.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+
+    // Optional: flicker effect on header
+    const flickerElements = document.querySelectorAll('.glitch');
+    setInterval(() => {
+      flickerElements.forEach(el => {
+        el.style.opacity = (Math.random() > 0.85) ? '0.5' : '1';
+      });
+    }, 150);
+  </script>
+</body>
+</html>
